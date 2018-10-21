@@ -1223,8 +1223,8 @@ static void bb_ui_draw_UI(UIState *s) {
   tri_state_switch = 0;
   tri_state_fd = open ("/sys/devices/virtual/switch/tri-state-key/state", O_RDONLY);
   //if we can't open then switch should be assumed 1 for LEON
-  if (tri_state_fd == -1) {	  if (tri_state_fd == -1) {
-            tri_state_switch = 2;	            tri_state_switch = 1;
+  if (tri_state_fd == -1) {
+            tri_state_switch = 1;
   } else {
   	read (tri_state_fd, &buffer, 10);
 	tri_state_switch = buffer[0] -48;
