@@ -239,6 +239,8 @@ typedef struct UIState {
   float light_sensor;
 } UIState;
 
+#include "./dashcam.h"
+
 static int last_brightness = -1;
 static void set_brightness(UIState *s, int brightness) {
   if (last_brightness != brightness && (s->awake || brightness == 0)) {
@@ -1221,13 +1223,16 @@ static void bb_ui_draw_UI(UIState *s) {
   tri_state_switch = 0;
   tri_state_fd = open ("/sys/devices/virtual/switch/tri-state-key/state", O_RDONLY);
   //if we can't open then switch should be assumed 1 for LEON
-  if (tri_state_fd == -1) {
-            tri_state_switch = 1;
+  if (tri_state_fd == -1) {	  if (tri_state_fd == -1) {
+            tri_state_switch = 2;	            tri_state_switch = 1;
   } else {
   	read (tri_state_fd, &buffer, 10);
 	tri_state_switch = buffer[0] -48;
 	close(tri_state_fd);
   }
+
+  draw_date_time(s);
+
   if (tri_state_switch == 1) {
 	  const UIScene *scene = &s->scene;
 	  const int bb_dml_w = 180;
@@ -2253,6 +2258,7 @@ int main() {
     }
 
     if (s->awake) {
+      dashcam(s, touch_x, touch_y);
       ui_draw(s);
       glFinish();
       should_swap = true;
